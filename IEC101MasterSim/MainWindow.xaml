@@ -1,0 +1,455 @@
+﻿<Window x:Class="IEC101MasterSim.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    xmlns:ports="clr-namespace:System.IO.Ports;assembly=System"
+    xmlns:local="clr-namespace:IEC101MasterSim"
+    xmlns:viewModels="clr-namespace:IEC101MasterSim.ViewModel"
+    xmlns:models="clr-namespace:IEC101MasterSim.Model"
+    xmlns:views="clr-namespace:IEC101MasterSim.View"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+    xmlns:dgx="urn:tom-englert.de/DataGridExtensions"
+    TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+    Background="{DynamicResource MaterialDesignPaper}"
+    TextElement.FontWeight="Medium"
+    TextElement.FontSize="15"
+    FontFamily="{materialDesign:MaterialDesignFont}"
+    mc:Ignorable="d"
+    Closing="Window_Closing"
+    Title="IEC101 Master Sim"
+    WindowStartupLocation="CenterScreen"
+    MinHeight="605"
+    MinWidth="1000"
+    Height="605"
+    Width="1100">
+
+    <Window.DataContext>
+        <viewModels:MainViewModel />
+    </Window.DataContext>
+
+    <Window.Resources>
+        <ObjectDataProvider x:Key="EnumParity"
+            ObjectType="{x:Type sys:Enum}"
+            MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="ports:Parity"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="EnumHandshake"
+            ObjectType="{x:Type sys:Enum}"
+            MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="ports:Handshake"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="EnumCommadType"
+            ObjectType="{x:Type sys:Enum}"
+            MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:IEC101CommandType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <ObjectDataProvider x:Key="EnumCommandValue"
+            ObjectType="{x:Type sys:Enum}"
+            MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:IEC101CommandValue"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+        <Style x:Key="StatusStyle" TargetType="TextBlock">
+
+            <Setter Property="Foreground" Value="#d32f2f" />
+            
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=_statusTextBlock, Path=Text}" Value="IDLE">
+                    <Setter Property="Foreground" Value="#f57c00"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding ElementName=_statusTextBlock, Path=Text}" Value="ERROR">
+                    <Setter Property="Foreground" Value="#d32f2f"/>
+                </DataTrigger>
+
+                <DataTrigger Binding="{Binding ElementName=_statusTextBlock, Path=Text}" Value="AVAILABLE">
+                    <Setter Property="Foreground" Value="#388e3c"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <materialDesign:DialogHost>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="253"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="55"/>
+                <RowDefinition Height="55"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TabControl Style="{StaticResource MaterialDesignNavigatilRailTabControl}"
+                materialDesign:ColorZoneAssist.Mode="PrimaryMid"
+                TabStripPlacement="Left"
+                Margin="5"
+                Grid.RowSpan="3">
+                <TabItem Header="{materialDesign:PackIcon Kind=Network, Size=24}"
+                    Style="{StaticResource MaterialDesignNavigationRailTabItem}">
+                    <Border BorderBrush="#4151b1"
+                        BorderThickness="0,2,2,2">
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="80"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <StackPanel Grid.Row="0"
+                                Grid.Column="0"
+                                Margin="5"
+                                Grid.ColumnSpan="2">
+                                <TextBox materialDesign:HintAssist.Hint="Port Name"
+                                    materialDesign:HintAssist.IsFloating="True"
+                                    Text="{Binding SerialPort.PortName, UpdateSourceTrigger=PropertyChanged}"
+                                    IsEnabled="{Binding NotRunning}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="1"
+                                Grid.Column="0"
+                                Margin="5"
+                                Grid.ColumnSpan="2">
+                                <TextBox materialDesign:HintAssist.Hint="Baud Rate"
+                                    materialDesign:HintAssist.IsFloating="True"
+                                    Text="{Binding SerialPort.BaudRate, UpdateSourceTrigger=PropertyChanged}"
+                                    IsEnabled="{Binding NotRunning}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="2"
+                                Grid.Column="0"
+                                Margin="5"
+                                Grid.ColumnSpan="2">
+                                <ComboBox materialDesign:HintAssist.Hint="Parity"
+                                    materialDesign:HintAssist.IsFloating="True"
+                                    ItemsSource="{Binding Source={StaticResource EnumParity}}"
+                                    SelectedItem="{Binding SerialPort.Parity}"
+                                    IsEnabled="{Binding NotRunning}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="3"
+                                Grid.Column="0"
+                                Margin="5"
+                                Grid.ColumnSpan="2">
+                                <ComboBox materialDesign:HintAssist.Hint="Handshake"
+                                    materialDesign:HintAssist.IsFloating="True"
+                                    ItemsSource="{Binding Source={StaticResource EnumHandshake}}"
+                                    SelectedItem="{Binding SerialPort.Handshake}"
+                                    IsEnabled="{Binding NotRunning}"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="4"
+                                Grid.Column="0"
+                                Margin="5"
+                                Grid.ColumnSpan="2">
+                                <TextBox materialDesign:HintAssist.Hint="AddressLength"
+                                    materialDesign:HintAssist.IsFloating="True"
+                                    Text="{Binding LinkLayerParameters.AddressLength, UpdateSourceTrigger=PropertyChanged}"
+                                    IsEnabled="{Binding NotRunning}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="5"
+                                Grid.Column="0"
+                                Margin="5"
+                                Grid.ColumnSpan="2">
+                                <TextBox materialDesign:HintAssist.Hint="Size Of CA"
+                                    materialDesign:HintAssist.IsFloating="True"
+                                    Text="{Binding ApplicationLayerParameters.SizeOfCA, UpdateSourceTrigger=PropertyChanged}"
+                                    IsEnabled="{Binding NotRunning}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="6"
+                                Grid.Column="0"
+                                Margin="5"
+                                Grid.ColumnSpan="2">
+                                <TextBox materialDesign:HintAssist.Hint="Size Of COT"
+                                    materialDesign:HintAssist.IsFloating="True"
+                                    Text="{Binding ApplicationLayerParameters.SizeOfCOT, UpdateSourceTrigger=PropertyChanged}"
+                                    IsEnabled="{Binding NotRunning}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="7"
+                                Grid.Column="0"
+                                Margin="5"
+                                Grid.ColumnSpan="2">
+                                <TextBox materialDesign:HintAssist.Hint="Size Of IOA"
+                                    materialDesign:HintAssist.IsFloating="True"
+                                    Text="{Binding ApplicationLayerParameters.SizeOfIOA, UpdateSourceTrigger=PropertyChanged}"
+                                    IsEnabled="{Binding NotRunning}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Row="8"
+                                Grid.Column="0"
+                                Margin="5"
+                                Grid.ColumnSpan="2">
+                                <TextBox materialDesign:HintAssist.Hint="Slave Address"
+                                    materialDesign:HintAssist.IsFloating="True"
+                                    Text="{Binding SlaveAddress, UpdateSourceTrigger=PropertyChanged}"
+                                    IsEnabled="{Binding NotRunning}" />
+                            </StackPanel>
+
+                            <Button Content="Start"
+                                Grid.Row="9"
+                                Grid.Column="0"
+                                Margin="5"
+                                Command="{Binding StartConnectionCommand}"
+                                materialDesign:ButtonProgressAssist.Value="-1"
+                                materialDesign:ButtonProgressAssist.IsIndicatorVisible="{Binding Running}"
+                                materialDesign:ButtonProgressAssist.IsIndeterminate="{Binding Running}"/>
+
+                            <Button Content="Stop"
+                                Grid.Row="9"
+                                Grid.Column="1"
+                                Margin="5"
+                                Command="{Binding CloseConnectionCommand}"/>
+                        </Grid>
+                    </Border>
+                </TabItem>
+                <TabItem Header="{materialDesign:PackIcon Kind=Send, Size=24}"
+                    Style="{StaticResource MaterialDesignNavigationRailTabItem}">
+                    <Border BorderBrush="#4151b1"
+                        BorderThickness="0,2,2,2">
+                        <Grid Margin="5">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="80"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="55"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+                            <ComboBox Grid.Row="0"
+                                Grid.ColumnSpan="2"
+                                Margin="5"
+                                materialDesign:HintAssist.Hint="Command Type"
+                                materialDesign:HintAssist.IsFloating="True"
+                                ItemsSource="{Binding Source={StaticResource EnumCommadType}}"
+                                SelectedItem="{Binding IEC101Command.Type}"
+                                IsEnabled="{Binding Running}"/>
+
+                            <ComboBox Grid.Row="1"
+                                Grid.ColumnSpan="2"
+                                Margin="5"
+                                materialDesign:HintAssist.Hint="Value"
+                                materialDesign:HintAssist.IsFloating="True"
+                                ItemsSource="{Binding Source={StaticResource EnumCommandValue}}"
+                                SelectedItem="{Binding IEC101Command.Value}"
+                                IsEnabled="{Binding Running}" />
+
+                            <StackPanel Grid.Row="2"
+                                Margin="5"
+                                Grid.ColumnSpan="2">
+                                <TextBox materialDesign:HintAssist.Hint="Address"
+                                    materialDesign:HintAssist.IsFloating="True"
+                                    Text="{Binding IEC101Command.ObjectAddress, UpdateSourceTrigger=PropertyChanged}"
+                                    IsEnabled="{Binding Running}" >
+                                    <TextBox.InputBindings>
+                                        <KeyBinding Key="Enter" Command="{Binding SendCtrlCmdCommand}" />
+                                    </TextBox.InputBindings>
+                                </TextBox>
+                            </StackPanel>
+
+                            <Button Content="Send"
+                                Grid.Row="3"
+                                Grid.ColumnSpan="2"
+                                Margin="5"
+                                Command="{Binding SendCtrlCmdCommand}"/>
+                        </Grid>
+                    </Border>
+                </TabItem>
+            </TabControl>
+            <DockPanel Grid.Row="0"
+                Grid.Column="2"
+                Margin="5"
+                Grid.ColumnSpan="2">
+                <TextBlock Margin="5"
+                    Text="Connection Status: "
+                    VerticalAlignment="Center"/>
+                <TextBlock Name="_statusTextBlock"
+                    Text="{Binding CurrentLinkLayerState}"
+                           Style="{DynamicResource StatusStyle}"
+                    VerticalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Width="95">
+                    <Button Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                        Width="40"
+                        Height="40"
+                        Margin="5,0"
+                        materialDesign:ShadowAssist.ShadowDepth="Depth1"
+                        Command="{x:Static materialDesign:DialogHost.OpenDialogCommand}">
+                        <Button.CommandParameter>
+                            <views:InfoDialog/>
+                        </Button.CommandParameter>
+                        <materialDesign:PackIcon Kind="InformationVariant"/>
+                    </Button>
+                    <Button x:Name="_toogleThemeBtn"
+                        Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
+                        Click="ToogleThemeBtn_Click"
+                        Width="40"
+                        Height="40"
+                        Margin="5,0"
+                        materialDesign:ShadowAssist.ShadowDepth="Depth1">
+                        <materialDesign:PackIcon Kind="ThemeLightDark"/>
+                    </Button>
+                </StackPanel>
+            </DockPanel>
+            <DockPanel Grid.Row="1"
+                Grid.Column="1"
+                Margin="5"
+                Grid.ColumnSpan="2">
+                <Button Content="Save"
+                    Margin="5"
+                    Width="80"
+                    Click="OpenSaveCsvFileDialog"
+                    HorizontalAlignment="Left"/>
+                <Button Content="Clear"
+                    Margin="5"
+                    Width="80"
+                    Command="{Binding ClearCommand}"
+                    HorizontalAlignment="Left"/>
+                <Button Content="Load ANs"
+                    Margin="5"
+                    Width="100"
+                    Click="OpenJsonFileDialog"
+                    HorizontalAlignment="Left"/>
+                <Button Content="Load HS"
+                    Margin="5"
+                    Width="100"
+                    Click="OpenHighlightJsonFileDialog"
+                    HorizontalAlignment="Left"/>
+                <StackPanel HorizontalAlignment="Right"
+                    Orientation="Horizontal">
+                    <TextBlock Text="Filter"
+                        VerticalAlignment="Center"
+                        FontSize="15"/>
+                    <materialDesign:PopupBox StaysOpen="True">
+                        <StackPanel Orientation="Vertical">
+                            <CheckBox Content="SPI"
+                                Margin="15,5"
+                                IsChecked="{Binding FiltredTypes.SPI}" />
+                            <CheckBox Content="DPI"
+                                Margin="15,5"
+                                IsChecked="{Binding FiltredTypes.DPI}" />
+                            <CheckBox Content="ITI"
+                                Margin="15,5"
+                                IsChecked="{Binding FiltredTypes.ITI}" />
+                            <CheckBox Content="MVS"
+                                Margin="15,5"
+                                IsChecked="{Binding FiltredTypes.MVS}" />
+                            <CheckBox Content="MVN"
+                                Margin="15,5"
+                                IsChecked="{Binding FiltredTypes.MVN}" />
+                            <CheckBox Content="SCO"
+                                Margin="15,5"
+                                IsChecked="{Binding FiltredTypes.SCO}" />
+                            <CheckBox Content="DCO"
+                                Margin="15,5"
+                                IsChecked="{Binding FiltredTypes.DCO}" />
+                            <CheckBox Content="HS"
+                                Margin="15,5"
+                                IsChecked="{Binding FiltredTypes.HS}" />
+                        </StackPanel>
+                    </materialDesign:PopupBox>
+                </StackPanel>
+            </DockPanel>
+
+            <!--to add filtering dgx:DataGridFilter.IsAutoFilterEnabled="True"-->
+
+            <DataGrid x:Name="_dataGrid"
+                ItemsSource="{Binding InfoSignals}"
+                ScrollViewer.ScrollChanged="DataGrid_ScrollChanged"
+                AutoGenerateColumns="False"
+                BorderThickness="2"
+                Margin="5"
+                IsReadOnly="True"
+                Grid.Row="2"
+                Grid.Column="1">
+
+                <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow"
+                        BasedOn="{StaticResource {x:Type DataGridRow}}">
+                        <Style.Triggers>
+
+                            <DataTrigger Binding="{Binding IsHighlighted}"
+                                Value="True">
+                                <Setter Property="Foreground"
+                                    Value="#4caf50"/>
+                            </DataTrigger>
+
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.RowStyle>
+
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Type"
+                        Width="100"
+                        Binding="{Binding Type}"/>
+                    <DataGridTextColumn Header="COT"
+                        Width="205"
+                        Binding="{Binding Cot}"/>
+                    <DataGridTextColumn Header="Value"
+                        Width="136"
+                        Binding="{Binding Value}"/>
+                    <DataGridTextColumn Header="Name"
+                        Width="128"
+                        Binding="{Binding ObjectName}"/>
+                    <DataGridTextColumn Header="Address"
+                        Width="108"
+                        Binding="{Binding ObjectAddress}"/>
+                    <DataGridTextColumn Header="PC Time"
+                        Width="176"
+                        Binding="{Binding PCTime}"/>
+                    <DataGridTextColumn Header="Time Stamp"
+                        Width="172"
+                        Binding="{Binding TimeStamp}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <materialDesign:Snackbar Grid.Column="1"
+                Grid.Row="2"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Margin="5"
+                MessageQueue="{Binding SnackbarMessageQueue}" />
+        </Grid>
+    </materialDesign:DialogHost>
+</Window>
