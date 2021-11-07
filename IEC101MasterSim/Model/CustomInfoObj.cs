@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using CsvHelper.Configuration;
 using lib60870.CS101;
 
@@ -87,15 +88,14 @@ namespace IEC101MasterSim.Model
 
     public class SpTs24InfoObj : CustomInfoObj
     {
-        public new int TimeStamp { get; set; }
-
         public SpTs24InfoObj(InformationObject informationObject, CauseOfTransmission cot, string objectName) : base(informationObject, cot, objectName)
         {
             var spTs24InfoObj = informationObject as SinglePointWithCP24Time2a;
+            var timeStamp = TimeSpan.FromMilliseconds(spTs24InfoObj.Timestamp.GetMilliseconds());
 
             Type = "SPI_TS_24";
             Value = spTs24InfoObj.Value;
-            TimeStamp = spTs24InfoObj.Timestamp.GetMilliseconds();
+            TimeStamp = timeStamp.ToString(@"hh\:mm\:ss\:fff", CultureInfo.CurrentCulture);
         }
     }
 
@@ -132,15 +132,15 @@ namespace IEC101MasterSim.Model
     public class DpTs24InfoObj : CustomInfoObj
     {
         public new DoublePointValue Value { get; set; }
-        public new int TimeStamp { get; set; }
 
         public DpTs24InfoObj(InformationObject informationObject, CauseOfTransmission cot, string objectName) : base(informationObject, cot, objectName)
         {
             var dpTs24InfoObj = informationObject as DoublePointWithCP24Time2a;
+            var timeStamp = TimeSpan.FromMilliseconds(dpTs24InfoObj.Timestamp.GetMilliseconds());
 
             Type = "DPI_TS_24";
             Value = dpTs24InfoObj.Value;
-            TimeStamp = dpTs24InfoObj.Timestamp.GetMilliseconds();
+            TimeStamp = timeStamp.ToString(@"hh\:mm\:ss\:fff", CultureInfo.CurrentCulture);
         }
     }
 
@@ -177,15 +177,15 @@ namespace IEC101MasterSim.Model
     public class MvsTs24InfoObj : CustomInfoObj
     {
         public new float Value { get; set; }
-        public new int TimeStamp { get; set; }
 
         public MvsTs24InfoObj(InformationObject informationObject, CauseOfTransmission cot, string objectName) : base(informationObject, cot, objectName)
         {
             var mvsTs24InfoObj = informationObject as MeasuredValueShortWithCP24Time2a;
+            var timeStamp = TimeSpan.FromMilliseconds(mvsTs24InfoObj.Timestamp.GetMilliseconds());
 
             Type = "MVS_TS_24";
             Value = mvsTs24InfoObj.Value;
-            TimeStamp = mvsTs24InfoObj.Timestamp.GetMilliseconds();
+            TimeStamp = timeStamp.ToString(@"hh\:mm\:ss\:fff", CultureInfo.CurrentCulture);
         }
     }
 
@@ -222,15 +222,15 @@ namespace IEC101MasterSim.Model
     public class MvnTs24InfoObj : CustomInfoObj
     {
         public new float Value { get; set; }
-        public new int TimeStamp { get; set; }
 
         public MvnTs24InfoObj(InformationObject informationObject, CauseOfTransmission cot, string objectName) : base(informationObject, cot, objectName)
         {
             var mvnTs24InfoObj = informationObject as MeasuredValueNormalizedWithCP24Time2a;
+            var timeStamp = TimeSpan.FromMilliseconds(mvnTs24InfoObj.Timestamp.GetMilliseconds());
 
             Type = "MVN_TS_24";
             Value = mvnTs24InfoObj.NormalizedValue;
-            TimeStamp = mvnTs24InfoObj.Timestamp.GetMilliseconds();
+            TimeStamp = timeStamp.ToString(@"hh\:mm\:ss\:fff", CultureInfo.CurrentCulture);
         }
     }
 
@@ -325,16 +325,16 @@ namespace IEC101MasterSim.Model
 
     public class ItTs24InfoObj : CustomInfoObj
     {
-        public new int TimeStamp { get; set; }
         public new BinaryCounterReading Value { get; set; }
 
         public ItTs24InfoObj(InformationObject informationObject, CauseOfTransmission cot, string objectName) : base(informationObject, cot, objectName)
         {
             var itTs24InfoObj = informationObject as IntegratedTotalsWithCP24Time2a;
+            var timeStamp = TimeSpan.FromMilliseconds(itTs24InfoObj.Timestamp.GetMilliseconds());
 
             Type = "ITI_TS_24";
             Value = itTs24InfoObj.BCR;
-            TimeStamp = itTs24InfoObj.Timestamp.GetMilliseconds();
+            TimeStamp = timeStamp.ToString(@"hh\:mm\:ss\:fff", CultureInfo.CurrentCulture);
         }
     }
 
@@ -355,5 +355,3 @@ namespace IEC101MasterSim.Model
     #endregion
 
 }
-
-
