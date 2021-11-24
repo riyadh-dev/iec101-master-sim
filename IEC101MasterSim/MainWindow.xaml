@@ -393,9 +393,8 @@
                 </StackPanel>
             </DockPanel>
 
-            <!--to add filtering dgx:DataGridFilter.IsAutoFilterEnabled="True"-->
-
             <DataGrid x:Name="_dataGrid"
+                dgx:DataGridFilter.IsAutoFilterEnabled="True"
                 ItemsSource="{Binding InfoSignals}"
                 ScrollViewer.ScrollChanged="DataGrid_ScrollChanged"
                 AutoGenerateColumns="False"
