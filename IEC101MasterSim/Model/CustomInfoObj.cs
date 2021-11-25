@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using CsvHelper.Configuration;
 using lib60870.CS101;
 
 namespace IEC101MasterSim.Model;
@@ -30,11 +29,17 @@ public abstract class CustomInfoObj
     public static string GetInfoObjName(InformationObject infoObject, Dictionary<int, string> addressNamesDictionary)
     {
         if (addressNamesDictionary == null)
+        {
             return "No ANs Loaded";
+        }
         else if (addressNamesDictionary.ContainsKey(infoObject.ObjectAddress))
+        {
             return addressNamesDictionary[infoObject.ObjectAddress];
+        }
         else
+        {
             return "Not in The List";
+        }
     }
 
     public static CustomInfoObj CustomInfoObjFactory(
@@ -352,3 +357,4 @@ public class ItTs56InfoObj : CustomInfoObj
         TimeStamp = itTs56InfoObj.Timestamp.GetDateTime();
     }
 }
+#endregion

@@ -47,9 +47,13 @@ public class IEC101Command
     public void SendCommand(object _)
     {
         if (Type == IEC101CommandType.SCO)
+        {
             SendSingleCommand();
+        }
         else
+        {
             SendDoubleCommand();
+        }
     }
 }
 

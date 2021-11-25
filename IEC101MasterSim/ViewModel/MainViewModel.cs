@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using IEC101MasterSim.Model;
-using IEC101MasterSim.testing;
 using lib60870.CS101;
 using lib60870.linklayer;
 using MaterialDesignThemes.Wpf;
@@ -72,7 +71,9 @@ public class MainViewModel : ViewModelBase
     private void LinkLayerStateChanged(object _parameter, int _slaveAddress, LinkLayerState newState)
     {
         if (newState != LinkLayerState.AVAILABLE)
+        {
             Application.Current.Dispatcher.Invoke(new(() => { Running = false; }));
+        }
 
         CurrentLinkLayerState = newState.ToString();
     }
@@ -89,12 +90,16 @@ public class MainViewModel : ViewModelBase
                 var customInfoObj = CustomInfoObj.CustomInfoObjFactory(infoObj, asdu.Cot, FiltredTypes, objName);
 
                 if (customInfoObj == null)
+                {
                     continue;
+                }
 
                 Application.Current.Dispatcher.Invoke(new(() =>
                 {
                     if (FiltredTypes.HS && !isHighlighted)
+                    {
                         return;
+                    }
 
                     customInfoObj.IsHighlighted = isHighlighted;
                     InfoSignals.Add(customInfoObj);
@@ -190,7 +195,9 @@ public class MainViewModel : ViewModelBase
     private bool CanStartConnection(object _)
     {
         if (DateTime.Now > DateTime.Parse(Properties.Settings.Default.ET))
+        {
             return false;
+        }
 
         return !Running;
     }

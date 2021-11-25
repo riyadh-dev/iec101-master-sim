@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Windows.Controls;
-using System.Windows.Navigation;
 
 namespace IEC101MasterSim.View;
 
