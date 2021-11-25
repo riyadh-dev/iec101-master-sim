@@ -62,7 +62,7 @@
 
   <ItemGroup>
     <Reference Include="lib60870">
-      <HintPath>..\..\lib60870.NET\bin\Release\lib60870.dll</HintPath>
+      <HintPath>libs\lib60870.dll</HintPath>
     </Reference>
   </ItemGroup>
 
