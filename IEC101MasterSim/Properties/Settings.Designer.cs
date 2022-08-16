@@ -151,7 +151,7 @@ namespace IEC101MasterSim.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("01-Dec-2021")]
+        [global::System.Configuration.DefaultSettingValueAttribute("01-Oct-2022")]
         public string ET {
             get {
                 return ((string)(this["ET"]));

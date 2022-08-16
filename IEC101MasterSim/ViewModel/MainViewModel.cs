@@ -215,7 +215,7 @@ public class MainViewModel : ViewModelBase
         }
         catch
         {
-            SnackbarMessageQueue.Enqueue("ANs Loadind Failed");
+            SnackbarMessageQueue.Enqueue("ANs Loaded Failed");
         }
     }
 
